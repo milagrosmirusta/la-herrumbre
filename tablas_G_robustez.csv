@@ -1,0 +1,6 @@
+candidato,nombre,relacion_genetica,log10_LR_gen_lab,G1_beta,G1_log10_LR_efectivo,G1_LR_efectivo,G2_beta,G2_log10_LR_efectivo,G2_LR_efectivo
+C1,Julián Escobar Ruiz,ninguno,0.0,1.0,0.0,1,1.0,0.0,1
+C2,Dante Méndez,madre+hermanos,28.5,1.0,28.5,3.162e+28,0.95,27.075,1.189e+27
+C3,Ariel Kosak,primo_segundo,1.4,0.3,0.42,2.630e+00,0.4,0.56,3.631e+00
+C4,Federico Almada,hermana,11.2,1.0,11.2,1.585e+11,1.0,11.2,1.585e+11
+C5,Hugo Barrientos,sobrino,5.8,0.5,2.9,7.943e+02,0.7,4.06,1.148e+04
