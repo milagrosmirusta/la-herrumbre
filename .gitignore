@@ -1,0 +1,7 @@
+# Memoria de trabajo (contexto interno, no se versiona)
+MEMORIA_PROYECTO.md
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
