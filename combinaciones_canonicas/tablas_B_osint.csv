@@ -1,0 +1,6 @@
+candidato,nombre,n_testimonios,n_alta,n_media,n_baja,n_apoyo,n_contra,n_neutral,n_familia_correlacionada,B1_LR_OSINT,B1_log10_LR,B2_LR_OSINT,B2_log10_LR
+C1,Julián Escobar Ruiz,3,1,1,1,1,1,1,0,3.077,0.4881,2.5,0.3979
+C2,Dante Méndez,7,3,3,1,5,0,2,3,84.449,1.9266,26.01,1.4151
+C3,Ariel Kosak,4,0,1,3,0,3,1,0,0.296,-0.5289,0.408,-0.3888
+C4,Federico Almada,6,3,1,2,4,0,2,2,73.517,1.8664,26.5,1.4233
+C5,Hugo Barrientos,5,0,2,3,2,0,3,0,4.0,0.6021,2.89,0.4609
