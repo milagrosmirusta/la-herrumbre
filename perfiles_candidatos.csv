@@ -1,0 +1,101 @@
+"candidato_id","candidato_nombre","edad","sexo","locus","a1","a2"
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D3S1358",19,12
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","VWA",14,17
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D16S539",12,14
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D2S1338",19,22
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D8S1179",11,11
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D21S11",25,29
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D18S51",14,13
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D19S433",14,14
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","TH01",5,5
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","FGA",27,28
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","CSF1PO",9,12
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D13S317",10,15
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D7S820",9,12
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D5S818",9,9
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","TPOX",6,7
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D1S1656",17,18
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D2S441",12,16
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D10S1248",9,17
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D12S391",23,17
+"C1_ESCOBAR","Julián Escobar Ruiz",44,"M","D22S1045",15,15
+"C2_MENDEZ","Dante Méndez",38,"M","D3S1358",13,19
+"C2_MENDEZ","Dante Méndez",38,"M","VWA",17,17
+"C2_MENDEZ","Dante Méndez",38,"M","D16S539",11,12
+"C2_MENDEZ","Dante Méndez",38,"M","D2S1338",28,21
+"C2_MENDEZ","Dante Méndez",38,"M","D8S1179",19,13
+"C2_MENDEZ","Dante Méndez",38,"M","D21S11",34,24
+"C2_MENDEZ","Dante Méndez",38,"M","D18S51",26,10
+"C2_MENDEZ","Dante Méndez",38,"M","D19S433",12,10
+"C2_MENDEZ","Dante Méndez",38,"M","TH01",5,7
+"C2_MENDEZ","Dante Méndez",38,"M","FGA",27,30
+"C2_MENDEZ","Dante Méndez",38,"M","CSF1PO",9,15
+"C2_MENDEZ","Dante Méndez",38,"M","D13S317",11,9
+"C2_MENDEZ","Dante Méndez",38,"M","D7S820",13,14
+"C2_MENDEZ","Dante Méndez",38,"M","D5S818",13,8
+"C2_MENDEZ","Dante Méndez",38,"M","TPOX",9,13
+"C2_MENDEZ","Dante Méndez",38,"M","D1S1656",16,19
+"C2_MENDEZ","Dante Méndez",38,"M","D2S441",8,8
+"C2_MENDEZ","Dante Méndez",38,"M","D10S1248",9,18
+"C2_MENDEZ","Dante Méndez",38,"M","D12S391",17,23
+"C2_MENDEZ","Dante Méndez",38,"M","D22S1045",16,11
+"C3_KOSAK","Ariel Kosak",41,"M","D3S1358",19,14
+"C3_KOSAK","Ariel Kosak",41,"M","VWA",19,17
+"C3_KOSAK","Ariel Kosak",41,"M","D16S539",13,12
+"C3_KOSAK","Ariel Kosak",41,"M","D2S1338",21,25
+"C3_KOSAK","Ariel Kosak",41,"M","D8S1179",16,11
+"C3_KOSAK","Ariel Kosak",41,"M","D21S11",26,24
+"C3_KOSAK","Ariel Kosak",41,"M","D18S51",9,12
+"C3_KOSAK","Ariel Kosak",41,"M","D19S433",9,11
+"C3_KOSAK","Ariel Kosak",41,"M","TH01",5,5
+"C3_KOSAK","Ariel Kosak",41,"M","FGA",23,21
+"C3_KOSAK","Ariel Kosak",41,"M","CSF1PO",8,13
+"C3_KOSAK","Ariel Kosak",41,"M","D13S317",9,15
+"C3_KOSAK","Ariel Kosak",41,"M","D7S820",10,12
+"C3_KOSAK","Ariel Kosak",41,"M","D5S818",12,12
+"C3_KOSAK","Ariel Kosak",41,"M","TPOX",10,6
+"C3_KOSAK","Ariel Kosak",41,"M","D1S1656",13,17
+"C3_KOSAK","Ariel Kosak",41,"M","D2S441",10,12
+"C3_KOSAK","Ariel Kosak",41,"M","D10S1248",8,18
+"C3_KOSAK","Ariel Kosak",41,"M","D12S391",16,22
+"C3_KOSAK","Ariel Kosak",41,"M","D22S1045",17,11
+"C4_ALMADA","Federico Almada",47,"M","D3S1358",14,16
+"C4_ALMADA","Federico Almada",47,"M","VWA",17,17
+"C4_ALMADA","Federico Almada",47,"M","D16S539",15,9
+"C4_ALMADA","Federico Almada",47,"M","D2S1338",25,26
+"C4_ALMADA","Federico Almada",47,"M","D8S1179",18,19
+"C4_ALMADA","Federico Almada",47,"M","D21S11",38,27
+"C4_ALMADA","Federico Almada",47,"M","D18S51",22,16
+"C4_ALMADA","Federico Almada",47,"M","D19S433",12,12
+"C4_ALMADA","Federico Almada",47,"M","TH01",6,5
+"C4_ALMADA","Federico Almada",47,"M","FGA",21,23
+"C4_ALMADA","Federico Almada",47,"M","CSF1PO",12,12
+"C4_ALMADA","Federico Almada",47,"M","D13S317",8,9
+"C4_ALMADA","Federico Almada",47,"M","D7S820",9,14
+"C4_ALMADA","Federico Almada",47,"M","D5S818",8,13
+"C4_ALMADA","Federico Almada",47,"M","TPOX",9,10
+"C4_ALMADA","Federico Almada",47,"M","D1S1656",13,13
+"C4_ALMADA","Federico Almada",47,"M","D2S441",10,16
+"C4_ALMADA","Federico Almada",47,"M","D10S1248",11,14
+"C4_ALMADA","Federico Almada",47,"M","D12S391",22,17
+"C4_ALMADA","Federico Almada",47,"M","D22S1045",14,9
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D3S1358",16,16
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","VWA",17,17
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D16S539",15,8
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D2S1338",23,15
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D8S1179",16,15
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D21S11",37,38
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D18S51",25,14
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D19S433",9,11
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","TH01",9,7
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","FGA",29,23
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","CSF1PO",7,12
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D13S317",9,9
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D7S820",7,13
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D5S818",12,8
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","TPOX",6,6
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D1S1656",17,19
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D2S441",11,12
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D10S1248",14,9
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D12S391",25,15
+"C5_BARRIENTOS","Hugo Barrientos",52,"M","D22S1045",19,15
