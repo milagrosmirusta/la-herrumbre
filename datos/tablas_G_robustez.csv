@@ -1,0 +1,6 @@
+candidato,pariente,grado_parentesco,log10_LR_lab,beta_G1,log10_LR_efec_G1,LR_efec_G1_notation,beta_G2,log10_LR_efec_G2,LR_efec_G2_notation
+C1,sin_pariente,sin_pariente,0.00,-,0.00,1,-, 0.00,1
+C2,madre_2herm,multi-1grado,28.50,1.00,28.50,3.16e+28,0.95,27.08,1.19e+27
+C3,primo_2grado,3grado,1.40,0.30,0.42,2.63,0.40,0.56,3.63
+C4,hermana,1grado,11.20,1.00,11.20,1.58e+11,1.00,11.20,1.58e+11
+C5,sobrino,2grado,5.80,0.50,2.90,7.94e+02,0.70,4.06,1.15e+04

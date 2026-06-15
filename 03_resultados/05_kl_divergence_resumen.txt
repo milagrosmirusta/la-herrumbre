@@ -1,0 +1,25 @@
+DIVERGENCIA KL — RESUMEN
+============================================================================
+
+KL(posterior_con_G || posterior_sin_G) = 0.634482 nats = 0.915364 bits
+
+Posteriors:
+  Sin genética (A+B):
+    H0: 0.000397
+    C1: 0.001627
+    C2: 0.530210
+    C3: 0.000156
+    C4: 0.460732
+    C5: 0.006878
+
+  Con genética (A+B+G):
+    H0: 0.000000
+    C1: 0.000000
+    C2: 1.000000
+    C3: 0.000000
+    C4: 0.000000
+    C5: 0.000000
+
+Interpretación:
+  La genética aportó 0.9154 bits de información (35.4% del máximo).
+  Esto equivale a decir que la genética 'podó' ~40% de la incertidumbre.
