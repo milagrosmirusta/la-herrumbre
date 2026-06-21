@@ -12,7 +12,10 @@
 #   resultados/01b_sensibilidad_8combinaciones.csv
 # ============================================================================
 
-source("00_setup_convenciones.R")
+.dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),
+         error = function(e) tryCatch(dirname(normalizePath(rstudioapi::getActiveDocumentContext()$path)),
+         error = function(e) getwd()))
+source(file.path(.dir, "00_setup_convenciones.R"))
 
 # ============================================================================
 # A. Posterior bajo la convención elegida (ambos priors)
@@ -32,24 +35,31 @@ tabla_posterior <- tibble(
   posterior_demografico = calcular_posterior(logLR_total, prior_demografico)
 )
 
+tabla_posterior <- tabla_posterior %>%
+  mutate(
+    log10_post_uniforme   = calcular_log_posterior(logLR_total, prior_uniforme),
+    log10_post_demografico = calcular_log_posterior(logLR_total, prior_demografico)
+  )
+
 write_csv(tabla_posterior,
           file.path(RESULTADOS_DIR, "01a_posterior_convencion_elegida.csv"))
 cat("Escrito: 01a_posterior_convencion_elegida.csv\n")
 
-# Imprimir resumen
+# Imprimir en escala logarítmica (como pide la consigna)
 cat(sprintf("\nConvención: %s+%s+%s\n", CONVENCION_A, CONVENCION_B, CONVENCION_G))
-cat("Posterior (prior demográfico):\n")
+cat("Posterior en escala log10  (0 = certeza, -31 = prácticamente imposible):\n")
 tabla_posterior %>%
-  select(hipotesis, logLR_total, posterior_uniforme, posterior_demografico) %>%
-  mutate(across(where(is.numeric), ~ round(., 4))) %>%
+  select(hipotesis, logLR_antrop, logLR_osint, logLR_gen, logLR_total,
+         log10_post_uniforme, log10_post_demografico) %>%
+  mutate(across(where(is.numeric), ~ round(., 3))) %>%
   print()
 
 # Decisión forense
 idx_max <- which.max(tabla_posterior$posterior_demografico)
 cat(sprintf(
-  "\nDecisión forense (prior demográfico): %s  P=%.6f  %s\n",
+  "\nDecisión forense (prior demográfico): %s  log10(P)=%.3f  %s\n",
   tabla_posterior$hipotesis[idx_max],
-  tabla_posterior$posterior_demografico[idx_max],
+  tabla_posterior$log10_post_demografico[idx_max],
   ifelse(tabla_posterior$posterior_demografico[idx_max] >= UMBRAL_DECISION,
          "→ IDENTIFICACIÓN POSITIVA", "→ INDETERMINACIÓN")
 ))
@@ -92,10 +102,47 @@ write_csv(tabla_8comb,
 cat("\nEscrito: 01b_sensibilidad_8combinaciones.csv\n")
 
 # Resumen: ganador por combinación
-cat("\nGanador (posterior demográfico) en cada combinación:\n")
+cat("\nGanador (log10 posterior demográfico) en cada combinación:\n")
 tabla_8comb %>%
   group_by(combinacion) %>%
   slice_max(posterior_demografico, n = 1) %>%
-  select(combinacion, hipotesis, posterior_demografico) %>%
-  mutate(posterior_demografico = round(posterior_demografico, 4)) %>%
+  mutate(log10_P = round(log10(posterior_demografico + 1e-300), 3)) %>%
+  select(combinacion, hipotesis, log10_P) %>%
   print()
+
+# ============================================================================
+# C. Gráfico: posterior por combinación (8 paneles)
+# ============================================================================
+
+g_8comb <- tabla_8comb %>%
+  mutate(
+    hipotesis = factor(hipotesis, levels = candidatos),
+    label     = ifelse(posterior_demografico >= 0.001,
+                       sprintf("%.2f", posterior_demografico), "≈0")
+  ) %>%
+  ggplot(aes(x = hipotesis, y = posterior_demografico, fill = hipotesis)) +
+  geom_col(width = 0.65) +
+  geom_text(aes(label = label), vjust = -0.4, size = 2.8, fontface = "bold") +
+  facet_wrap(~ combinacion, ncol = 3) +
+  scale_fill_manual(values = COLORES_HIPOTESIS) +
+  scale_y_continuous(limits = c(0, 1.12), breaks = c(0, 0.5, 1)) +
+  labs(
+    title    = "Posterior completa por combinación canónica (prior demográfico)",
+    subtitle = "En las 8 combinaciones posibles de convenciones, C2 siempre es identificado",
+    x        = "Hipótesis",
+    y        = "P(H | E)",
+    fill     = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "none",
+    plot.title      = element_text(face = "bold"),
+    plot.subtitle   = element_text(color = "gray40"),
+    strip.background = element_rect(fill = "gray92", color = NA),
+    strip.text      = element_text(face = "bold", size = 9),
+    panel.grid.major.x = element_blank()
+  )
+
+ggsave(file.path(GRAFICOS_DIR, "01_sensibilidad_8combinaciones.png"),
+       g_8comb, width = 10, height = 7, dpi = 150)
+cat("\nEscrito: 01_sensibilidad_8combinaciones.png\n")

@@ -18,8 +18,8 @@
 #   G1 = genética estricta       (β diferenciado por grado de parentesco)
 #   G2 = genética moderada       (β uniforme, más permisivo)
 
-CONVENCION_A <- "A1"   # "A1" o "A2"
-CONVENCION_B <- "B1"   # "B1" o "B2"
+CONVENCION_A <- "A2"   # "A1" o "A2"
+CONVENCION_B <- "B2"   # "B1" o "B2"
 CONVENCION_G <- "G1"   # "G1" o "G2"
 
 # Umbral para declarar identificación positiva
@@ -40,14 +40,21 @@ suppressMessages({
 # ----------------------------------------------------------------------------
 # Rutas
 # ----------------------------------------------------------------------------
-# Este script vive en src/scripts/; los datos están en ../../docs/
-DOCS_DIR     <- file.path(dirname(dirname(getwd())), "docs")
-# Fallback si se ejecuta desde otra ubicación
-if (!dir.exists(DOCS_DIR)) {
-  DOCS_DIR <- "../../docs"
-}
-RESULTADOS_DIR        <- file.path(dirname(getwd()), "resultados")
-GRAFICOS_DIR          <- file.path(RESULTADOS_DIR, "graficos")
+# Detectar el directorio de este script
+# Funciona con: source(), Rscript, y Run desde RStudio
+SCRIPT_DIR <- tryCatch(
+  # Caso 1: source() o Rscript
+  dirname(normalizePath(sys.frame(1)$ofile)),
+  error = function(e) tryCatch(
+    # Caso 2: Run desde RStudio (archivo abierto en el editor)
+    dirname(normalizePath(rstudioapi::getActiveDocumentContext()$path)),
+    error = function(e) getwd()
+  )
+)
+
+DOCS_DIR       <- normalizePath(file.path(SCRIPT_DIR, "../../docs"), mustWork = FALSE)
+RESULTADOS_DIR <- normalizePath(file.path(SCRIPT_DIR, "../resultados"),  mustWork = FALSE)
+GRAFICOS_DIR   <- normalizePath(file.path(RESULTADOS_DIR, "graficos"),   mustWork = FALSE)
 
 dir.create(RESULTADOS_DIR, showWarnings = FALSE, recursive = TRUE)
 dir.create(GRAFICOS_DIR,   showWarnings = FALSE, recursive = TRUE)
@@ -84,16 +91,45 @@ prior_demografico <- c(H0 = 0.20, C1 = 0.18, C2 = 0.22,
 prior_uniforme    <- setNames(rep(1/6, 6), candidatos)
 
 # ----------------------------------------------------------------------------
-# Función: calcular posterior en escala log10 (evita overflow de 10^28)
+# Funciones de posterior
 # ----------------------------------------------------------------------------
+
+# Devuelve P(H|E) en escala lineal [0,1]
+# Usa log-sum-exp: resta el máximo antes de exponenciar para evitar overflow
 calcular_posterior <- function(logLR_total, prior) {
-  log_num     <- log10(prior) + logLR_total          # log10 del numerador
-  log_num_adj <- log_num - max(log_num)              # estabilidad numérica
+  log_num     <- log10(prior) + logLR_total
+  log_num_adj <- log_num - max(log_num)        # log-sum-exp: resta el máximo
   num         <- 10^log_num_adj
   num / sum(num)
 }
+
+# Devuelve log10[ P(H|E) ] — escala logarítmica, como pide la consigna
+# C2 → ≈ 0  |  C4 → ≈ -17  |  H0 → ≈ -31
+calcular_log_posterior <- function(logLR_total, prior) {
+  log_num     <- log10(prior) + logLR_total
+  log_num_adj <- log_num - max(log_num)        # log-sum-exp
+  log10_Z     <- log10(sum(10^log_num_adj))    # log10 de la constante normalizadora
+  log_num_adj - log10_Z                        # log10[ P(Hi|E) ]
+}
+
+# ----------------------------------------------------------------------------
+# Paleta de colores (modificable)
+# ----------------------------------------------------------------------------
+# H0 = gris (hipótesis residual)
+# C2 = naranja óxido (el ganador, más visible)
+# Ajustar el mapeo según preferencia
+
+COLORES_HIPOTESIS <- c(
+  H0 = "#D3D5D7",  
+  C1 = "#F4E3B2",     
+  C2 = "#CF5C36",   
+  C3 = "#EFC88B",   
+  C4 = "#0D2847",  
+  C5 = "#8B9EA8"    
+)
 
 cat(sprintf(
   "Setup cargado: convencion %s+%s+%s | umbral=%.2f\n",
   CONVENCION_A, CONVENCION_B, CONVENCION_G, UMBRAL_DECISION
 ))
+

@@ -18,7 +18,10 @@
 #   resultados/graficos/04_sensibilidad_lambda.png
 # ============================================================================
 
-source("00_setup_convenciones.R")
+.dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),
+         error = function(e) tryCatch(dirname(normalizePath(rstudioapi::getActiveDocumentContext()$path)),
+         error = function(e) getwd()))
+source(file.path(.dir, "00_setup_convenciones.R"))
 
 LAMBDAS <- c(0, 0.3, 0.5, 0.7, 1.0)
 
@@ -99,8 +102,7 @@ cat(sprintf(
 # Gráfico
 # ============================================================================
 
-cores_hipotesis <- c(H0 = "#636363", C1 = "#377eb8", C2 = "#4daf4a",
-                     C3 = "#ff7f00", C4 = "#984ea3", C5 = "#e41a1c")
+cores_hipotesis <- COLORES_HIPOTESIS
 
 g <- filas %>%
   mutate(prior = recode(prior,

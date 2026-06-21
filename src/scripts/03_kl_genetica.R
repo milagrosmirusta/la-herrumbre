@@ -17,7 +17,10 @@
 #   resultados/graficos/03_kl_genetica.png
 # ============================================================================
 
-source("00_setup_convenciones.R")
+.dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),
+         error = function(e) tryCatch(dirname(normalizePath(rstudioapi::getActiveDocumentContext()$path)),
+         error = function(e) getwd()))
+source(file.path(.dir, "00_setup_convenciones.R"))
 
 # ============================================================================
 # Función KL divergence
@@ -116,8 +119,8 @@ g <- kl_tabla %>%
   geom_text(aes(label = round(KL_bits, 2)),
             position = position_dodge(width = 0.9),
             vjust = -0.3, size = 3) +
-  scale_fill_manual(values = c("Prior demográfico" = "#2c7bb6",
-                                "Prior uniforme"    = "#abd9e9")) +
+  scale_fill_manual(values = c("Prior demográfico" = "#0D2847",
+                                "Prior uniforme"    = "#EFC88B")) +
   labs(
     title    = "Aporte informacional de la línea genética",
     subtitle = "KL(posterior con genética || posterior sin genética)",

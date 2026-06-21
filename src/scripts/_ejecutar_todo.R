@@ -20,16 +20,20 @@ cat("║  Causa 1872/2024                                                    ║
 cat("╚══════════════════════════════════════════════════════════════════════╝\n\n")
 cat("Inicio:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n\n")
 
-scripts <- c(
+.dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),
+         error = function(e) tryCatch(dirname(normalizePath(rstudioapi::getActiveDocumentContext()$path)),
+         error = function(e) getwd()))
+
+scripts <- file.path(.dir, c(
   "01_evolucion_posterior.R",
   "02_evolucion_posterior_progresiva.R",
   "03_kl_genetica.R",
   "04_sensibilidad_lambda.R",
   "05_tabla_pericial.R"
-)
+))
 
 for (i in seq_along(scripts)) {
-  cat(sprintf("\n[%d/%d] %s\n", i, length(scripts), scripts[i]))
+  cat(sprintf("\n[%d/%d] %s\n", i, length(scripts), basename(scripts[i])))
   cat(strrep("─", 60), "\n")
   tryCatch(
     source(scripts[i]),
@@ -55,9 +59,10 @@ cat("    04_sensibilidad_lambda.csv\n")
 cat("    05_tabla_pericial.csv\n\n")
 cat("  Gráficos (graficos/):\n")
 cat("    02a_etapa1_antropometria.png\n")
-cat("    02b_etapa2_antrop_osint.png\n")
+cat("    02b_etapa2_ambos_priors.png\n")
 cat("    02c_etapa3_completa.png\n")
 cat("    02d_evolucion_barras_apiladas.png\n")
+cat("    02e_tabla_comparacion_priors.png\n")
 cat("    03_kl_genetica.png\n")
 cat("    04_sensibilidad_lambda.png\n")
 cat("    05_tabla_pericial.png\n\n")
