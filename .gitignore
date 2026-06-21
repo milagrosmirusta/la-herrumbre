@@ -1,9 +1,14 @@
-# Memoria de trabajo (contexto interno, no se versiona)
-MEMORIA_PROYECTO.md
-
 # R
 .Rhistory
 .RData
 .Rproj.user/
+*.rds
 
+# Resultados generados por scripts (no se versionan)
+src/resultados/
 
+# macOS
+.DS_Store
+
+# Archivos de trabajo interno (no son parte del entregable)
+MEMORIA_PROYECTO.md

@@ -1,155 +1,109 @@
+# Caso A — La Herrumbre
+### Identificación forense bayesiana · Causa 1872/2024
+
+**Taller Integrador de Inferencia Bayesiana**  
+Maestría en Minería de Datos, FCEN, UBA · Defensa: 23/06/2026  
+**Página web del caso:** <https://herrumbrev2.netlify.app/>
+
 ---
 
-editor_options: 
-  markdown: 
-    wrap: 72
+## El caso
+
+El 14 de enero de 2024, en el paraje El Bajo (Partido de La Herrumbre, Provincia de Buenos Aires) se recuperaron restos óseos humanos parcialmente degradados. El Laboratorio Forense Municipal procesó las muestras y la Fiscalía Departamental delimitó el espacio de hipótesis a cinco candidatos compatibles tras un cribado demográfico.
+
+Se encarga un dictamen pericial bayesiano sobre seis hipótesis:
+
+| Hipótesis | Descripción |
+|-----------|-------------|
+| H₀        | Los restos no corresponden a ninguno de los cinco candidatos |
+| H₁ – H₅  | Los restos corresponden al candidato C1, C2, C3, C4 o C5 respectivamente |
+
 ---
 
-# La Herrumbre — Caso Práctico Bayesiano
+## Líneas de evidencia
 
-**Defensa:** 23/06/2026 \| **Causa:** 1872/2024 \| **Objetivo:** Identificación forense de restos óseos mediante inferencia bayesiana discreta
+El análisis combina tres líneas bajo el supuesto de independencia condicional dado Hᵢ (los LR se multiplican; en escala log, se suman):
 
-**Página web**: <https://herrumbrev2.netlify.app/>
+**Línea A — Antropométrica:** compatibilidad de los restos con el sexo, la edad estimada y el intervalo post-mortem (IPM) de cada candidato.
 
-------------------------------------------------------------------------
+**Línea B — Fuentes abiertas (OSINT):** testimonios, registros municipales y actividad en redes sociales.
 
-## El caso en una línea
+**Línea G — Genética:** verosimilitudes STR (Short Tandem Repeats) por pares, pre-computadas sobre la base poblacional del registro civil.
 
-Combinar tres líneas de evidencia (antropometría, OSINT, genética) con el Teorema de Bayes para identificar a quién pertenecen unos restos hallados en la zona rural de Buenos Aires. Seis hipótesis: H₀ (ninguno) + 5 candidatos.
+El Laboratorio entrega los cocientes de verosimilitud (LR) ya calculados en dos convenciones por línea: estricta (A1, B1, G1) y moderada (A2, B2, G2). La convención activa se declara en `src/scripts/00_setup_convenciones.R`.
 
-------------------------------------------------------------------------
+---
 
 ## Estructura del repositorio
 
-```         
+```
 La-Herrumbre/
-├── README.md                          
+├── README.md
 │
-├── combinaciones_canonicas/
-│   ├── combinaciones_canonicas.R      
-│   ├── aporte_genetica_KL.R           
-│   ├── sensibilidad_lambda.R         
-│   ├── RESUMEN.md                    
-│   └── salidas/
-│       ├── resumen_8_combinaciones.csv
-│       ├── aporte_genetica_KL.csv
-│       ├── sensibilidad_lambda_*.csv
-│       ├── validacion_vs_groundtruth.csv
-│       └── grafico_*.png              (3 gráficos)
+├── docs/                                  # Datos fuente (descargados del sitio)
+│   ├── tablas_A_antropometrica.csv        # LR antropométrico (conv. A1 y A2)
+│   ├── tablas_B_osint.csv                 # LR fuentes abiertas (conv. B1 y B2)
+│   ├── tablas_G_robustez.csv              # LR genético efectivo (conv. G1 y G2)
+│   ├── tablas_resumen_combinaciones.csv   # Resumen 8 combinaciones (laboratorio)
+│   ├── base_poblacional.csv               # Distribución STR de la población
+│   ├── perfiles_candidatos.csv            # Perfiles de los cinco candidatos
+│   ├── tabla_parientes.csv                # Pedigrees declarados
+│   ├── desgrabados_radio.csv              # Datos crudos de fuentes abiertas
+│   └── guia_caso_A_Herrumbre.pdf          # Guía oficial del caso
 │
-├── tablas_A_antropometrica.csv        (LR antropométrico)
-├── tablas_B_osint.csv                 (LR OSINT)
-├── tablas_G_robustez.csv              (LR genético efectivo)
-├── tablas_resumen_combinaciones.csv   (ground-truth para validación)
-├── desgrabados_radio.csv              (evidencia OSINT auxiliar)
-│
-└── Prior Demográfica - Tres Líneas.R  (análisis exploratorio inicial)
+└── src/
+    ├── scripts/                           # Scripts de análisis
+    │   ├── 00_setup_convenciones.R        # ← PARÁMETROS MODIFICABLES AQUÍ
+    │   ├── 01_evolucion_posterior.R       # Posterior conv. elegida + 8 combinaciones
+    │   ├── 02_evolucion_posterior_progresiva.R  # 3 etapas (A → A+B → A+B+G)
+    │   ├── 03_kl_genetica.R               # Aporte informacional KL de la genética
+    │   ├── 04_sensibilidad_lambda.R       # Sensibilidad al peso λ de la genética
+    │   ├── 05_tabla_pericial.R            # Tabla pericial final (CSV + imagen PNG)
+    │   └── _ejecutar_todo.R               # Corre los 5 scripts en orden
+    │
+    └── resultados/                        # Generado automáticamente por los scripts
+        ├── 01a_posterior_convencion_elegida.csv
+        ├── 01b_sensibilidad_8combinaciones.csv
+        ├── 02_evolucion_progresiva.csv
+        ├── 03_kl_genetica.csv
+        ├── 04_sensibilidad_lambda.csv
+        ├── 05_tabla_pericial.csv
+        └── graficos/
+            ├── 02a_etapa1_antropometria.png
+            ├── 02b_etapa2_antrop_osint.png
+            ├── 02c_etapa3_completa.png
+            ├── 02d_evolucion_barras_apiladas.png
+            ├── 03_kl_genetica.png
+            ├── 04_sensibilidad_lambda.png
+            └── 05_tabla_pericial.png
 ```
 
-------------------------------------------------------------------------
+---
 
-## Flujo de trabajo
+## Cómo reproducir el análisis
 
-### PASO 1–2: Contexto y decisiones metodológicas
+**Requisitos:** R ≥ 4.0 con los paquetes `tidyverse` y `gridExtra`.
 
-**Estado:** Implícito en los scripts.
-
-- Candidatos: C1–C5 descritos en la guía
-- Restos: Sexo M, edad 35–50 años, IPM sept–nov 2023
-- Convenciones elegidas: **A1+B1+G1** (justificación por confirmarse)
-  - A1: antropometría estricta (σ edad = 5 años, IPM riguroso)
-  - B1: OSINT estricta (factor descuento = 0.6)
-  - G1: robustez genética estricta (β diferenciados por grado)
-
-------------------------------------------------------------------------
-
-### PASO 3–4: Cargar datos y calcular posterior
-
-**Estado:** Completado. Script: `combinaciones_canonicas.R`
-
-- Carga 3 CSVs → calcula log-LR total por combinación
-- Usa log-sum-exp para evitar overflow (10²⁸)
-- Normaliza una sola vez al final
-- Salida: tabla con P(H\|E) bajo prior uniforme y demográfico
-
-**Resultado clave:** C2 (Dante Méndez) ≈ 1.0 en todas las 8 combinaciones.
-
-------------------------------------------------------------------------
-
-### PASO 5: Aporte informacional de la genética
-
-**Estado:** Completado. Script: `aporte_genetica_KL.R`
-
-- Calcula posterior sin genética: P(H\|A,B)
-- Divergencia KL: ¿cuánta información aportó la genética?
-- Resultado: KL = 0.85–1.07 bits según combinación (aporte moderado pero decisivo)
-
-------------------------------------------------------------------------
-
-### PASO 6: Sensibilidad
-
-**Estado:** Completado. Script: `sensibilidad_lambda.R`
-
-**6.1 Prior:** Uniforme vs. demográfico → C2 gana en ambos
-
-**6.2 Peso λ de la genética:** - λ = 0 (sin genética): C2 ≈ 0.53, NO supera 0.95 - λ = 0.3–0.7: transición gradual - λ = 1.0 (con genética): C2 ≈ 1.0
-
-**6.3 Todas las 8 combinaciones:** C2 gana siempre (con genética)
-
-------------------------------------------------------------------------
-
-### PASO 7: Evolución de las creencias (P₁, P₂, P₃) + Análisis de Robustez
-
-**Estado:** ✅ Completado. Script: `evolucion_posteriores.py`
-
-Progresión de actualización bayesiana:
-- **P₁:** Posterior solo con antropometría → C2 ≈ 45.8%
-- **P₂:** Posterior con antropometría + OSINT → C2 ≈ 55.6%
-- **P₃ (Con hermanos):** Posterior completa → C2 ≈ 1.000
-- **P₃ (Sin hermanos):** Si los hermanos NO son válidos → **C4 ≈ 1.000** (C2 colapsa)
-
-**HALLAZGO CRÍTICO:** La conclusión depende 100% de la validez de los hermanos de C2. Si los hermanos (ID0383, ID0384) resultan NO ser genéticamente compatibles con C2, entonces **C4 (Federico Almada) se convierte en el candidato identificado**.
-
-Salida: `evolucion_posteriores.csv` + dos gráficos de evolución
-
-------------------------------------------------------------------------
-
-### PASO 8: Decisión forense final
-
-**Estado:** Análisis técnico en RESUMEN.md. Falta narrativa formal.
-
-**Umbral de decisión:** P(C2) \> 0.95 bajo: - ✅ Prior uniforme + A1+B1+G1 - ✅ Prior demográfico + A1+B1+G1 - ✅ Todas las 8 combinaciones - ✅ λ ≥ 0.3
-
-------------------------------------------------------------------------
-
-##  Cómo correr los scripts
-
-``` bash
-cd combinaciones_canonicas/
-Rscript combinaciones_canonicas.R    # Genera resumen_8_combinaciones.csv
-Rscript aporte_genetica_KL.R         # Genera aporte_genetica_KL.csv
-Rscript sensibilidad_lambda.R        # Genera sensibilidad_lambda_*.csv
+```r
+# Desde RStudio o terminal, con working directory en src/scripts/
+setwd("src/scripts")
+source("_ejecutar_todo.R")
 ```
 
-Los gráficos se guardan automáticamente en `salidas/`.
+Los resultados se escriben en `src/resultados/` y los gráficos en `src/resultados/graficos/`.
 
-------------------------------------------------------------------------
+### Cambiar la convención
 
-## Hallazgos principales
+Editar únicamente `src/scripts/00_setup_convenciones.R`:
 
-### Conclusión técnica
-- **C2 (Dante Méndez) es identificado con posteridad ≈ 1.0** bajo la combinación elegida (A1+B1+G1) y ambos priors.
-- **La genética es decisiva:** sin ella, C2 ≈ 0.53 (bajo umbral). Con genética, domina \~31 órdenes de magnitud.
-- **Robustez a convenciones:** identificación se mantiene en todas las 8 combinaciones.
+```r
+CONVENCION_A <- "A1"   # "A1" (estricta) o "A2" (moderada)
+CONVENCION_B <- "B1"   # "B1" (estricta) o "B2" (moderada)
+CONVENCION_G <- "G1"   # "G1" (estricta) o "G2" (moderada)
+```
 
-### ⚠️ Hallazgo crítico de sensibilidad
-- **La conclusión es FRÁGIL:** Depende 100% de la validez de los hermanos de C2 (ID0383, ID0384).
-- **Escenario alternativo:** Si los hermanos NO son válidos → **C4 (Federico Almada) = 1.000** (C2 colapsa a 10⁻¹²)
-- **Recomendación forense:** Verificar filiación civil de C2 antes de dictar. Declarar explícitamente en dictamen que la conclusión supone validez de hermanos.
+El cambio se propaga automáticamente a todos los scripts al volver a ejecutar `_ejecutar_todo.R`.
 
-### Validación
-- **Ground-truth:** posterior_completa coincide en 48/48 casos con datos del laboratorio.
+---
 
-------------------------------------------------------------------------
-
-**Última actualización:** 10/06/2026 — Análisis de robustez completado
+*Ejercicio didáctico con datos simulados. La Herrumbre, sus habitantes, la Oficina Municipal y el Laboratorio Forense son construcciones ficticias.*

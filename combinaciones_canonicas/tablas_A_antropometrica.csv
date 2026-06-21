@@ -1,6 +1,0 @@
-candidato,nombre,edad_real,ultima_actividad_categoria,A1_LR_sexo,A1_LR_edad,A1_LR_ipm,A1_LR_total,A1_log10_LR,A2_LR_sexo,A2_LR_edad,A2_LR_ipm,A2_LR_total,A2_log10_LR
-C1,Julián Escobar Ruiz,44,despues,1.9,3.513,0.2,1.335,0.1254,1.9,2.92,0.4,2.22,0.3463
-C2,Dante Méndez,38,septoct,1.9,2.969,2.8,15.795,1.1985,1.9,2.579,2.4,11.761,1.0704
-C3,Ariel Kosak,41,despues,1.9,3.513,0.2,1.335,0.1254,1.9,2.92,0.4,2.22,0.3463
-C4,Federico Almada,47,septoct,1.9,2.969,2.8,15.795,1.1985,1.9,2.579,2.4,11.761,1.0704
-C5,Hugo Barrientos,52,noviembre,1.9,1.424,1.6,4.33,0.6365,1.9,1.574,2.0,5.981,0.7768

@@ -1,0 +1,6 @@
+"candidato_id","candidato_nombre","relacion","pariente_id_principal"
+"C1_ESCOBAR","Julián Escobar Ruiz","ninguno",NA
+"C2_MENDEZ","Dante Méndez","madre+hermanos","ID0382"
+"C3_KOSAK","Ariel Kosak","primo_segundo","ID0357"
+"C4_ALMADA","Federico Almada","hermana","ID0322"
+"C5_BARRIENTOS","Hugo Barrientos","sobrino","ID0387"
