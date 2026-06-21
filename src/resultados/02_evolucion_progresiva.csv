@@ -1,0 +1,7 @@
+hipotesis,unif_etapa1_antrop,unif_etapa2_antrop_osint,unif_etapa3_completa,demo_etapa1_antrop,demo_etapa2_antrop_osint,demo_etapa3_completa
+H0,0.0286,0.0016,0,0.0319,0.0015,0
+C1,0.0635,0.0086,0,0.0636,0.0076,0
+C2,0.3365,0.4763,1,0.4117,0.5086,1
+C3,0.0635,0.0014,0,0.0424,8e-4,0
+C4,0.3365,0.4851,0,0.3742,0.471,0
+C5,0.1714,0.027,0,0.0762,0.0105,0

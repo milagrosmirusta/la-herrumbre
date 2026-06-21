@@ -4,8 +4,6 @@
 .Rproj.user/
 *.rds
 
-# Resultados generados por scripts (no se versionan)
-src/resultados/
 
 # macOS
 .DS_Store
