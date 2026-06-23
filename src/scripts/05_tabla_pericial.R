@@ -125,66 +125,75 @@ if (cond_a && cond_b && cond_c) {
 cat(sprintf("%s\n", strrep("-", 70)))
 
 # ============================================================================
-# Imagen de la tabla (para PPT)
+# Imagen de la tabla — versión revisada
 # ============================================================================
 
-# Preparar datos para visualización: mostrar P(H|E) con notación científica
-# cuando es muy pequeño o muy grande
-tabla_img <- tabla_pericial %>%
-  mutate(
-    `P(Hᵢ|E)` = case_when(
-      `P(Hᵢ|E)` >= 0.001 ~ sprintf("%.4f", `P(Hᵢ|E)`),
-      TRUE                ~ sprintf("%.2e", `P(Hᵢ|E)`)
-    )
-  )
-
-# Colores: resaltar la fila ganadora
-fila_ganadora <- idx_max
-n_filas       <- nrow(tabla_img)
-colores_fill  <- rep("white", n_filas)
-colores_fill[fila_ganadora] <- "#c8e6c9"   # verde claro para el ganador
-colores_text  <- rep("black", n_filas)
-
-# Construir tabla con gridExtra
 library(grid)
 library(gridExtra)
 
-# tableGrob no acepta vectores de color directamente en versiones viejas;
-# usamos theme personalizado
-tema_tabla <- ttheme_default(
+# directorio ya definido en 00_setup_convenciones.R
+fmt_decimal_coma <- function(x, digits) {
+  gsub(".", ",", sprintf(paste0("%.", digits, "f"), x), fixed = TRUE)
+}
+
+fmt_decimal_coma_trim <- function(x, digits = 2) {
+  salida <- fmt_decimal_coma(x, digits)
+  salida <- sub(",0+$", "", salida)
+  salida <- sub("(,[0-9]*?)0+$", "\\1", salida)
+  salida
+}
+
+fmt_cientifica_coma <- function(x, digits = 2) {
+  mantisa   <- x / 10^floor(log10(abs(x)))
+  exponente <- floor(log10(abs(x)))
+  paste0(fmt_decimal_coma_trim(mantisa, digits), " × 10^", exponente)
+}
+
+fmt_prob_pericial <- function(x) {
+  case_when(
+    x >= 0.001 ~ fmt_decimal_coma_trim(x, 2),
+    x > 0      ~ fmt_cientifica_coma(x, 2),
+    TRUE       ~ "0"
+  )
+}
+
+tabla_pericial_img <- tibble(
+  Hipotesis      = candidatos,
+  pi             = fmt_decimal_coma_trim(prior_demografico, 2),
+  `log10 LR_ant` = fmt_decimal_coma_trim(logLR_A, 2),
+  `log10 LR_abi` = fmt_decimal_coma_trim(logLR_B, 2),
+  `log10 LR_gen` = fmt_decimal_coma_trim(logLR_G, 2),
+  `log10 LR_tot` = fmt_decimal_coma_trim(logLR_total, 2),
+  `P(H|E)`       = fmt_prob_pericial(posterior)
+)
+names(tabla_pericial_img)[1] <- "Hipótesis"
+
+fills_p <- rep("white", nrow(tabla_pericial_img))
+fills_p[idx_max] <- COLORES_HIPOTESIS[["C2"]]
+
+tema_pericial <- ttheme_default(
   core = list(
-    bg_params  = list(fill = colores_fill, col = "gray70"),
-    fg_params  = list(col = colores_text, fontsize = 11)
+    bg_params = list(fill = fills_p, col = "gray70"),
+    fg_params = list(fontsize = 11)
   ),
   colhead = list(
-    bg_params  = list(fill = "#37474f"),
-    fg_params  = list(col = "white", fontsize = 11, fontface = "bold")
+    bg_params = list(fill = "#37474f"),
+    fg_params = list(col = "white", fontsize = 11, fontface = "bold")
   )
 )
 
-grob_tabla <- tableGrob(tabla_img, rows = NULL, theme = tema_tabla)
-
-# Título y subtítulo
-titulo <- textGrob(
-  sprintf("Tabla Pericial — %s+%s+%s | Prior demográfico",
-          CONVENCION_A, CONVENCION_B, CONVENCION_G),
+grob_pericial <- tableGrob(tabla_pericial_img, rows = NULL,
+                            theme = tema_pericial)
+titulo_pericial <- textGrob(
+  "Tabla pericial bayesiana",
   gp = gpar(fontsize = 13, fontface = "bold")
 )
-subtitulo <- textGrob(
-  sprintf("Umbral de identificación positiva: %.2f  |  Ganador: %s  [P ≈ %.4f]",
-          UMBRAL_DECISION, candidatos[idx_max], posterior[idx_max]),
-  gp = gpar(fontsize = 10, col = "gray40")
-)
-
-imagen_final <- arrangeGrob(
-  titulo, subtitulo, grob_tabla,
-  nrow = 3,
-  heights = unit(c(0.8, 0.5, 5), c("cm", "cm", "null"))
-)
+img_pericial <- arrangeGrob(titulo_pericial, grob_pericial,
+                             nrow    = 2,
+                             heights = unit(c(0.8, 5), c("cm", "null")))
 
 png(file.path(GRAFICOS_DIR, "05_tabla_pericial.png"),
-    width = 1200, height = 420, res = 120)
-grid.draw(imagen_final)
+    width = 1450, height = 400, res = 120, bg = "white")
+grid.draw(img_pericial)
 dev.off()
-
-cat("\nEscrito: 05_tabla_pericial.png\n")
+cat("Escrito: 05_tabla_pericial.png\n")

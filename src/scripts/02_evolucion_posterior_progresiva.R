@@ -163,110 +163,142 @@ dev.off()
 cat("Escrito: 02e_tabla_comparacion_priors.png\n\n")
 
 # ============================================================================
-# Gráficos
+# Gráficos — versión revisada
 # ============================================================================
 
-grafico_etapa <- function(posteriors, titulo, subtitulo,
-                          ylim_max = 0.6, color_titulo = "black") {
-  tibble(hipotesis = candidatos, posterior = posteriors) %>%
-    ggplot(aes(x = reorder(hipotesis, -posterior),
-               y = posterior, fill = hipotesis)) +
-    geom_col(width = 0.65) +
-    geom_text(aes(label = sprintf("%.1f%%", posterior * 100)),
-              vjust = -0.4, size = 3.5, fontface = "bold") +
-    scale_fill_manual(values = cores) +
-    labs(title = titulo, subtitle = subtitulo,
-         x = "Hipótesis", y = "Probabilidad posterior") +
-    theme_minimal(base_size = 13) +
-    theme(legend.position = "none",
-          plot.title    = element_text(face = "bold", color = color_titulo),
-          plot.subtitle = element_text(color = "gray40")) +
-    ylim(0, ylim_max)
+# directorio ya definido en 00_setup_convenciones.R
+tema <- function(base_size = 12) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      plot.title        = element_text(face = "bold"),
+      panel.grid.minor  = element_blank(),
+      panel.background  = element_rect(fill = "white", color = NA),
+      plot.background   = element_rect(fill = "white", color = NA),
+      legend.background = element_rect(fill = "white", color = NA),
+      legend.position   = "top"
+    )
 }
 
-# Etapa 1: prior demográfico (ambos priors son muy similares aquí)
-g1 <- grafico_etapa(
-  etapas$demografico$P1,
-  "Etapa 1 — Solo antropometría (prior demográfico)",
-  "Compatibilidad con sexo, edad e intervalo post-mortem"
-)
-ggsave(file.path(GRAFICOS_DIR, "02a_etapa1_antropometria.png"),
-       g1, width = 7, height = 5, dpi = 150)
-cat("Escrito: 02a_etapa1_antropometria.png\n")
-
-# Etapa 2: comparación LADO A LADO de los dos priors
-datos_e2 <- bind_rows(
-  tibble(hipotesis = candidatos, posterior = etapas$uniforme$P2,
-         prior = "Prior uniforme"),
-  tibble(hipotesis = candidatos, posterior = etapas$demografico$P2,
-         prior = "Prior demográfico")
-) %>%
-  mutate(
-    hipotesis = factor(hipotesis, levels = candidatos),
-    prior     = factor(prior, levels = c("Prior uniforme", "Prior demográfico"))
+guardar <- function(nombre, grafico, width = 9, height = 5.5) {
+  ggsave(
+    file.path(GRAFICOS_DIR, nombre),
+    grafico,
+    width  = width,
+    height = height,
+    dpi    = 150,
+    bg     = "white"
   )
+  cat("Escrito:", nombre, "\n")
+}
 
-g2 <- ggplot(datos_e2, aes(x = hipotesis, y = posterior, fill = hipotesis)) +
-  geom_col(width = 0.65) +
-  geom_text(aes(label = sprintf("%.1f%%", posterior * 100)),
-            vjust = -0.4, size = 3.2, fontface = "bold") +
-  facet_wrap(~ prior) +
-  scale_fill_manual(values = cores) +
-  labs(
-    title    = "Etapa 2 — Antropometría + OSINT (sin genética)",
-    subtitle = sprintf(
-      "Prior uniforme: gana %s  |  Prior demográfico: gana %s  →  el prior importa aquí",
-      ganador_unif_e2, ganador_demo_e2),
-    x = "Hipótesis", y = "Probabilidad posterior"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    legend.position = "none",
-    plot.title    = element_text(face = "bold"),
-    plot.subtitle = element_text(color = "#CF5C36", face = "bold"),
-    strip.background = element_rect(fill = "gray92", color = NA),
-    strip.text    = element_text(face = "bold")
-  ) +
-  ylim(0, 0.65)
+fmt_pct <- function(x) sprintf("%.1f%%", 100 * x)
 
-ggsave(file.path(GRAFICOS_DIR, "02b_etapa2_ambos_priors.png"),
-       g2, width = 10, height = 5, dpi = 150)
-cat("Escrito: 02b_etapa2_ambos_priors.png\n")
-
-# Etapa 3: posterior completa
-g3 <- grafico_etapa(
-  etapas$demografico$P3,
-  "Etapa 3 — Posterior completa (Antrop. + OSINT + Genética)",
-  "La genética resuelve: C2 gana bajo cualquier prior",
-  ylim_max = 1.05, color_titulo = COLORES_HIPOTESIS["C2"]
+prior_labels <- c(
+  demografico = "Prior demográfico",
+  uniforme    = "Prior uniforme"
 )
-ggsave(file.path(GRAFICOS_DIR, "02c_etapa3_completa.png"),
-       g3, width = 7, height = 5, dpi = 150)
-cat("Escrito: 02c_etapa3_completa.png\n")
+PRIOR_DEMO <- prior_labels[["demografico"]]
+PRIOR_UNIF <- prior_labels[["uniforme"]]
 
-# Gráfico de evolución: barras apiladas (prior demográfico)
-datos_apil <- tibble(
-  hipotesis = rep(candidatos, 3),
-  etapa     = rep(c("Etapa 1\n(A)", "Etapa 2\n(A+B)", "Etapa 3\n(A+B+G)"), each = 6),
-  posterior = c(etapas$demografico$P1, etapas$demografico$P2, etapas$demografico$P3)
+# Construir datos_etapas en formato largo para grafico_etapa_priors
+datos_etapas <- bind_rows(
+  tibble(prior = PRIOR_DEMO, etapa = "Antropometria",
+         hipotesis = candidatos, posterior = etapas$demografico$P1),
+  tibble(prior = PRIOR_DEMO, etapa = "Antropometria + OSINT",
+         hipotesis = candidatos, posterior = etapas$demografico$P2),
+  tibble(prior = PRIOR_DEMO, etapa = "Completa",
+         hipotesis = candidatos, posterior = etapas$demografico$P3),
+  tibble(prior = PRIOR_UNIF, etapa = "Antropometria",
+         hipotesis = candidatos, posterior = etapas$uniforme$P1),
+  tibble(prior = PRIOR_UNIF, etapa = "Antropometria + OSINT",
+         hipotesis = candidatos, posterior = etapas$uniforme$P2),
+  tibble(prior = PRIOR_UNIF, etapa = "Completa",
+         hipotesis = candidatos, posterior = etapas$uniforme$P3)
 ) %>%
   mutate(
-    etapa     = factor(etapa, levels = c("Etapa 1\n(A)", "Etapa 2\n(A+B)", "Etapa 3\n(A+B+G)")),
+    etapa     = factor(etapa, levels = c("Antropometria",
+                                         "Antropometria + OSINT",
+                                         "Completa")),
     hipotesis = factor(hipotesis, levels = candidatos)
   )
 
-g4 <- ggplot(datos_apil, aes(x = etapa, y = posterior, fill = hipotesis)) +
-  geom_col(position = "stack", width = 0.6) +
-  scale_fill_manual(values = cores) +
-  labs(title    = "Progresión de la posterior en 3 etapas (prior demográfico)",
-       subtitle = "Cómo cada línea de evidencia poda el espacio de hipótesis",
-       x = "Evidencia acumulada", y = "Probabilidad posterior",
-       fill = "Hipótesis") +
-  theme_minimal(base_size = 13) +
-  theme(plot.title    = element_text(face = "bold"),
-        plot.subtitle = element_text(color = "gray40")) +
-  ylim(0, 1)
+grafico_etapa_priors <- function(nombre_etapa, titulo, archivo,
+                                 width = 10, height = 5.6,
+                                 alpha_prior_uniforme = 1) {
+  limite_x <- min(1.08, max(0.12,
+    max(datos_etapas$posterior[datos_etapas$etapa == nombre_etapa]) * 1.18
+  ))
 
-ggsave(file.path(GRAFICOS_DIR, "02d_evolucion_barras_apiladas.png"),
-       g4, width = 8, height = 5, dpi = 150)
-cat("Escrito: 02d_evolucion_barras_apiladas.png\n")
+  datos <- datos_etapas %>%
+    filter(etapa == nombre_etapa) %>%
+    mutate(
+      hipotesis_prior = reorder(
+        paste(hipotesis, prior, sep = "__"),
+        posterior
+      ),
+      etiqueta    = fmt_pct(posterior),
+      alpha_panel = ifelse(prior == PRIOR_UNIF, alpha_prior_uniforme, 1),
+      x_etiqueta  = pmin(posterior + limite_x * 0.015, limite_x * 0.96)
+    )
+
+  g <- ggplot(datos, aes(x = posterior, y = hipotesis_prior,
+                          fill = hipotesis)) +
+    geom_col(aes(alpha = alpha_panel), width = 0.68) +
+    geom_text(aes(x = x_etiqueta, label = etiqueta, alpha = alpha_panel),
+              hjust = 0, size = 3.2, fontface = "bold") +
+    facet_wrap(~ prior, ncol = 2, scales = "free_y") +
+    scale_fill_manual(values = cores) +
+    scale_alpha_identity() +
+    scale_y_discrete(labels = function(x) sub("__.*$", "", x)) +
+    scale_x_continuous(limits = c(0, limite_x), labels = fmt_pct) +
+    labs(title = titulo, x = "Probabilidad posterior", y = "Hipótesis") +
+    tema(12) +
+    theme(
+      legend.position  = "none",
+      strip.background = element_rect(fill = "gray92", color = NA),
+      strip.text       = element_text(face = "bold")
+    )
+
+  guardar(archivo, g, width = width, height = height)
+}
+
+grafico_etapa_priors(
+  "Antropometria",
+  "Fuente de evidencia: antropometría",
+  "02a_etapa1_antropometria_prior_uniforme_atenuado.png",
+  alpha_prior_uniforme = 0.10
+)
+
+grafico_etapa_priors(
+  "Antropometria + OSINT",
+  "Fuente de evidencia: antropometría y OSINT",
+  "02b_etapa2_ambos_priors.png"
+)
+
+grafico_etapa_priors(
+  "Completa",
+  "Fuente de evidencia: antropometría, OSINT y genética",
+  "02c_etapa3_genetica_prior_uniforme_atenuado.png",
+  alpha_prior_uniforme = 0.10
+)
+
+g02d <- datos_etapas %>%
+  filter(prior == PRIOR_DEMO) %>%
+  ggplot(aes(x = etapa, y = posterior, fill = hipotesis)) +
+  geom_col(width = 0.58) +
+  scale_fill_manual(values = cores) +
+  scale_y_continuous(labels = fmt_pct) +
+  labs(
+    title = "Evolución de la posterior",
+    x     = "Evidencia acumulada",
+    y     = "Probabilidad posterior",
+    fill  = "Hipótesis"
+  ) +
+  scale_x_discrete(labels = c(
+    "Antropometria"         = "Antropometría",
+    "Antropometria + OSINT" = "Antropometría + OSINT",
+    "Completa"              = "Antropometría + OSINT + genética"
+  )) +
+  tema(12)
+
+guardar("02d_evolucion_barras_apiladas.png", g02d, width = 8, height = 5)

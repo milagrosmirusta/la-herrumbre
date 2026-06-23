@@ -1,11 +1,12 @@
 # Caso A — La Herrumbre
+
 ### Identificación forense bayesiana · Causa 1872/2024
 
-**Taller Integrador de Inferencia Bayesiana**  
-Maestría en Minería de Datos, FCEN, UBA · Defensa: 23/06/2026  
+**Taller Integrador de Inferencia Bayesiana**\
+Maestría en Minería de Datos, FCEN, UBA \
 **Página web del caso:** <https://herrumbrev2.netlify.app/>
 
----
+------------------------------------------------------------------------
 
 ## El caso
 
@@ -14,11 +15,11 @@ El 14 de enero de 2024, en el paraje El Bajo (Partido de La Herrumbre, Provincia
 Se encarga un dictamen pericial bayesiano sobre seis hipótesis:
 
 | Hipótesis | Descripción |
-|-----------|-------------|
-| H₀        | Los restos no corresponden a ninguno de los cinco candidatos |
-| H₁ – H₅  | Los restos corresponden al candidato C1, C2, C3, C4 o C5 respectivamente |
+|---------------------------------|---------------------------------------|
+| H₀ | Los restos no corresponden a ninguno de los cinco candidatos |
+| H₁ – H₅ | Los restos corresponden al candidato C1, C2, C3, C4 o C5 respectivamente |
 
----
+------------------------------------------------------------------------
 
 ## Líneas de evidencia
 
@@ -32,11 +33,11 @@ El análisis combina tres líneas bajo el supuesto de independencia condicional 
 
 El Laboratorio entrega los cocientes de verosimilitud (LR) ya calculados en dos convenciones por línea: estricta (A1, B1, G1) y moderada (A2, B2, G2). La convención activa se declara en `src/scripts/00_setup_convenciones.R`.
 
----
+------------------------------------------------------------------------
 
 ## Estructura del repositorio
 
-```
+```         
 La-Herrumbre/
 ├── README.md
 │
@@ -48,7 +49,6 @@ La-Herrumbre/
 │   ├── base_poblacional.csv               # Distribución STR de la población
 │   ├── perfiles_candidatos.csv            # Perfiles de los cinco candidatos
 │   ├── tabla_parientes.csv                # Pedigrees declarados
-│   ├── desgrabados_radio.csv              # Datos crudos de fuentes abiertas
 │   └── guia_caso_A_Herrumbre.pdf          # Guía oficial del caso
 │
 └── src/
@@ -78,13 +78,13 @@ La-Herrumbre/
             └── 05_tabla_pericial.png
 ```
 
----
+------------------------------------------------------------------------
 
 ## Cómo reproducir el análisis
 
 **Requisitos:** R ≥ 4.0 con los paquetes `tidyverse` y `gridExtra`.
 
-```r
+``` r
 # Desde RStudio o terminal, con working directory en src/scripts/
 setwd("src/scripts")
 source("_ejecutar_todo.R")
@@ -96,7 +96,7 @@ Los resultados se escriben en `src/resultados/` y los gráficos en `src/resultad
 
 Editar únicamente `src/scripts/00_setup_convenciones.R`:
 
-```r
+``` r
 CONVENCION_A <- "A1"   # "A1" (estricta) o "A2" (moderada)
 CONVENCION_B <- "B1"   # "B1" (estricta) o "B2" (moderada)
 CONVENCION_G <- "G1"   # "G1" (estricta) o "G2" (moderada)
@@ -104,6 +104,6 @@ CONVENCION_G <- "G1"   # "G1" (estricta) o "G2" (moderada)
 
 El cambio se propaga automáticamente a todos los scripts al volver a ejecutar `_ejecutar_todo.R`.
 
----
+------------------------------------------------------------------------
 
 *Ejercicio didáctico con datos simulados. La Herrumbre, sus habitantes, la Oficina Municipal y el Laboratorio Forense son construcciones ficticias.*

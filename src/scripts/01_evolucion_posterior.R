@@ -111,38 +111,135 @@ tabla_8comb %>%
   print()
 
 # ============================================================================
-# C. Gráfico: posterior por combinación (8 paneles)
+# C. Gráfico: posterior por combinación (8 paneles) — versión revisada
 # ============================================================================
 
-g_8comb <- tabla_8comb %>%
+library(grid)
+
+# directorio ya definido en 00_setup_convenciones.R
+cores <- COLORES_HIPOTESIS
+
+tema <- function(base_size = 12) {
+  theme_minimal(base_size = base_size) +
+    theme(
+      plot.title        = element_text(face = "bold"),
+      panel.grid.minor  = element_blank(),
+      panel.background  = element_rect(fill = "white", color = NA),
+      plot.background   = element_rect(fill = "white", color = NA),
+      legend.background = element_rect(fill = "white", color = NA),
+      legend.position   = "top"
+    )
+}
+
+guardar <- function(nombre, grafico, width = 9, height = 5.5) {
+  ggsave(
+    file.path(GRAFICOS_DIR, nombre),
+    grafico,
+    width  = width,
+    height = height,
+    dpi    = 150,
+    bg     = "white"
+  )
+  cat("Escrito:", nombre, "\n")
+}
+
+fmt_decimal_coma_trim <- function(x, digits = 2) {
+  salida <- gsub(".", ",", sprintf(paste0("%.", digits, "f"), x), fixed = TRUE)
+  salida <- sub(",0+$", "", salida)
+  salida <- sub("(,[0-9]*?)0+$", "\\1", salida)
+  salida
+}
+
+log10_seguro <- function(x) log10(pmax(x, 1e-300))
+
+prior_labels <- c(
+  demografico = "Prior demográfico",
+  uniforme    = "Prior uniforme"
+)
+PRIOR_DEMO <- prior_labels[["demografico"]]
+PRIOR_UNIF <- prior_labels[["uniforme"]]
+
+# Construir datos_8comb con ambos priors para gráficos facetados
+datos_8comb <- bind_rows(
+  tabla_8comb %>% mutate(prior = PRIOR_DEMO, posterior = posterior_demografico),
+  tabla_8comb %>% mutate(prior = PRIOR_UNIF, posterior = posterior_uniforme)
+) %>%
+  select(combinacion, prior, hipotesis, posterior) %>%
   mutate(
-    hipotesis = factor(hipotesis, levels = candidatos),
-    label     = ifelse(posterior_demografico >= 0.001,
-                       sprintf("%.2f", posterior_demografico), "≈0")
-  ) %>%
-  ggplot(aes(x = hipotesis, y = posterior_demografico, fill = hipotesis)) +
-  geom_col(width = 0.65) +
-  geom_text(aes(label = label), vjust = -0.4, size = 2.8, fontface = "bold") +
-  facet_wrap(~ combinacion, ncol = 3) +
-  scale_fill_manual(values = COLORES_HIPOTESIS) +
-  scale_y_continuous(limits = c(0, 1.12), breaks = c(0, 0.5, 1)) +
-  labs(
-    title    = "Posterior completa por combinación canónica (prior demográfico)",
-    subtitle = "En las 8 combinaciones posibles de convenciones, C2 siempre es identificado",
-    x        = "Hipótesis",
-    y        = "P(H | E)",
-    fill     = NULL
-  ) +
-  theme_minimal(base_size = 11) +
-  theme(
-    legend.position = "none",
-    plot.title      = element_text(face = "bold"),
-    plot.subtitle   = element_text(color = "gray40"),
-    strip.background = element_rect(fill = "gray92", color = NA),
-    strip.text      = element_text(face = "bold", size = 9),
-    panel.grid.major.x = element_blank()
+    combinacion = factor(combinacion, levels = unique(tabla_8comb$combinacion)),
+    hipotesis   = factor(hipotesis, levels = candidatos),
+    log10_post  = log10_seguro(posterior)
   )
 
-ggsave(file.path(GRAFICOS_DIR, "01_sensibilidad_8combinaciones.png"),
-       g_8comb, width = 10, height = 7, dpi = 150)
-cat("\nEscrito: 01_sensibilidad_8combinaciones.png\n")
+fmt_posterior_combo <- function(x) {
+  case_when(
+    x >= 0.995 ~ "1",
+    x < 0.005  ~ "≈0",
+    TRUE       ~ fmt_decimal_coma_trim(x, 2)
+  )
+}
+
+grafico_combinaciones_prior <- function(nombre_prior, titulo, archivo) {
+  datos <- datos_8comb %>%
+    filter(prior == nombre_prior) %>%
+    mutate(
+      seleccionada = combinacion == paste(CONVENCION_A, CONVENCION_B,
+                                          CONVENCION_G, sep = "+"),
+      etiqueta   = fmt_posterior_combo(posterior),
+      y_etiqueta = case_when(
+        posterior >= 0.995 ~ 1.04,
+        posterior < 0.005  ~ 0.045,
+        TRUE               ~ pmin(posterior + 0.035, 1.04)
+      )
+    )
+
+  resaltado <- datos %>%
+    filter(seleccionada) %>%
+    distinct(combinacion)
+
+  g <- ggplot(datos, aes(x = hipotesis, y = posterior, fill = hipotesis)) +
+    geom_col(width = 0.64) +
+    geom_rect(
+      data        = resaltado,
+      aes(xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf),
+      inherit.aes = FALSE,
+      fill        = NA,
+      color       = cores[["C2"]],
+      linewidth   = 1.1
+    ) +
+    geom_text(
+      aes(y = y_etiqueta, label = etiqueta),
+      size        = 3.0,
+      fontface    = "bold",
+      show.legend = FALSE
+    ) +
+    facet_wrap(~ combinacion, ncol = 3) +
+    scale_fill_manual(values = cores) +
+    scale_y_continuous(
+      limits = c(0, 1.12),
+      breaks = c(0, 0.5, 1),
+      labels = fmt_decimal_coma_trim
+    ) +
+    labs(title = titulo, x = "Hipótesis", y = "P(H | E)") +
+    tema(12) +
+    theme(
+      legend.position    = "none",
+      strip.background   = element_rect(fill = "gray92", color = NA),
+      strip.text         = element_text(face = "bold"),
+      panel.grid.major.x = element_blank()
+    )
+
+  guardar(archivo, g, width = 12, height = 7.2)
+}
+
+grafico_combinaciones_prior(
+  PRIOR_DEMO,
+  "Posterior completa por combinación: prior demográfico",
+  "01_sensibilidad_8combinaciones.png"
+)
+
+grafico_combinaciones_prior(
+  PRIOR_UNIF,
+  "Posterior completa por combinación: prior uniforme",
+  "01b_sensibilidad_8combinaciones_prior_uniforme.png"
+)
