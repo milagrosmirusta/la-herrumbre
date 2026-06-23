@@ -7,16 +7,7 @@
 # Para cambiar la convención o el prior, editar SOLO esta sección.
 # ============================================================================
 
-# ----------------------------------------------------------------------------
-# PARÁMETROS MODIFICABLES
-# ----------------------------------------------------------------------------
-# Convenciones por bloque (cambiar aquí para explorar alternativas):
-#   A1 = antropometría estricta  (σ_edad = 5 años, IPM riguroso)
-#   A2 = antropometría moderada  (σ_edad = 10 años, IPM flexible)
-#   B1 = OSINT estricta          (α descuento testimonios = 0.6)
-#   B2 = OSINT moderada          (α descuento testimonios = 0.8)
-#   G1 = genética estricta       (β diferenciado por grado de parentesco)
-#   G2 = genética moderada       (β uniforme, más permisivo)
+
 
 CONVENCION_A <- "A2"   # "A1" o "A2"
 CONVENCION_B <- "B2"   # "B1" o "B2"

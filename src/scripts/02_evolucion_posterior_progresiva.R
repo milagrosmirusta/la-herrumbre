@@ -2,24 +2,6 @@
 # 02_evolucion_posterior_progresiva.R
 # Caso A "La Herrumbre" — Causa 1872/2024
 # ============================================================================
-# Construye la posterior en tres etapas sucesivas bajo AMBOS priors,
-# mostrando cómo cada línea de evidencia actualiza la creencia:
-#
-#   Etapa 1: π × L_A                (prior + antropometría)
-#   Etapa 2: π × L_A × L_B          (+ fuentes abiertas / OSINT)
-#   Etapa 3: π × L_A × L_B × L_G   (+ genética → posterior completa)
-#
-# Punto clave: en Etapa 2, el ganador depende del prior (C2 vs C4).
-# La genética resuelve la ambigüedad en Etapa 3 bajo cualquier prior.
-#
-# Salidas:
-#   resultados/02_evolucion_progresiva.csv
-#   resultados/graficos/02a_etapa1_antropometria.png
-#   resultados/graficos/02b_etapa2_ambos_priors.png   ← comparación prior U vs D
-#   resultados/graficos/02c_etapa3_completa.png
-#   resultados/graficos/02d_evolucion_barras_apiladas.png
-#   resultados/graficos/02e_tabla_comparacion_priors.png  ← tabla PNG resumen
-# ============================================================================
 
 .dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),
          error = function(e) tryCatch(dirname(normalizePath(rstudioapi::getActiveDocumentContext()$path)),
@@ -61,7 +43,7 @@ write_csv(tabla_progresion,
 cat("Escrito: 02_evolucion_progresiva.csv\n\n")
 
 # ============================================================================
-# Tabla comparativa en consola (como la imagen de la PPT)
+# Tabla comparativa en consola 
 # ============================================================================
 
 fmt <- function(x) ifelse(x < 0.0005, "≈ 0", sprintf("%.4f", x))

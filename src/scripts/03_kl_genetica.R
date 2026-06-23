@@ -9,12 +9,6 @@
 #   q = P(H | E_ant, E_osint)          [posterior sin genética]
 #
 #   KL(p || q) = Σ_i p_i · log₂(p_i / q_i)   [en bits]
-#
-# Se calcula para las 8 combinaciones y ambos priors.
-#
-# Salidas:
-#   resultados/03_kl_genetica.csv
-#   resultados/graficos/03_kl_genetica.png
 # ============================================================================
 
 .dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),
@@ -69,12 +63,6 @@ kl_tabla <- map_dfr(seq_len(nrow(grilla)), function(i) {
   tibble(
     combinacion = paste(cA, cB, cG, sep = "+"),
     prior       = pr,
-    # KL_bits, tal como lo define la consigna (Paso 5):
-    #   KL( P(H|E_full) || P(H|E_ant,abi) )
-    # p = posterior FINAL (A+B+G), q = posterior PROVISIONAL (solo A+B).
-    # No se compara contra la ignorancia total (1/6 por candidato): la
-    # consigna define la línea de base como la posterior provisional de
-    # los pasos 4.1/4.2, que ya está informada por antropometría y OSINT.
     KL_bits     = kl_bits(p, q),
     KL_nats     = KL_bits * log(2)
   )
@@ -105,16 +93,6 @@ cat(sprintf("  Prior uniforme    → KL = %.4f bits (%.4f nats)\n",
   filter(kl_elegida, prior == "uniforme")$KL_bits,
   filter(kl_elegida, prior == "uniforme")$KL_nats))
 
-# Interpretación según el criterio textual de la consigna (Paso 5):
-#   "Una KL grande significa que la genética movió la posterior de manera
-#    sustantiva; una KL chica, que la genética confirmó lo que ya estaba
-#    establecido. Ambas lecturas son legítimas y se interpretan en el
-#    dictamen."
-# No hay un "techo teórico" que comparar: la consigna no lo pide, y
-# comparar contra log2(6) (ignorancia total entre 6 candidatos) sería
-# comparar contra una línea de base que este caso nunca tuvo, porque ya
-# arrancamos con antropometría + OSINT, no desde cero.
-
 # Lectura en términos de probabilidad, para dar contexto concreto:
 q_C2_elegida <- calcular_posterior(logLR_A + logLR_B, prior_demografico)[candidatos == "C2"]
 p_C2_elegida <- calcular_posterior(logLR_A + logLR_B + logLR_G, prior_demografico)[candidatos == "C2"]
@@ -127,18 +105,7 @@ cat("genética movió la posterior de manera sustantiva: pasó de un cuasi-empat
 cat("a una identificación prácticamente cierta. No 'confirmó nomás' lo que ya\n")
 cat("estaba establecido, aunque tampoco arrancó de la nada.\n")
 
-# ============================================================================
-# Gráfico
-# ============================================================================
-# Decisiones de diseño:
-#  (1) SIN línea de "techo teórico": la consigna define KL contra la
-#      posterior provisional (A+B), no contra la ignorancia total entre
-#      6 candidatos. log2(6) no es la cota de esta cantidad y compararla
-#      así fue un error de una versión anterior de esta slide.
-#  (2) borde resaltado en las barras de la convención elegida (A2+B2+G1);
-#  (3) paneles separados por B1/B2: el patrón real (B2 da más KL que B1,
-#      sin importar A o G) queda visible de un vistazo en vez de escondido
-#      en el orden alfabético de las 8 combinaciones.
+
 # ============================================================================
 
 orden_AG <- c("A1+G1", "A1+G2", "A2+G1", "A2+G2")

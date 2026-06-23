@@ -1,21 +1,7 @@
 # ============================================================================
 # 04_sensibilidad_lambda.R
 # Caso A "La Herrumbre" — Causa 1872/2024
-# ============================================================================
-# Evalúa la robustez de la identificación al peso asignado a la genética.
-# Se pondera el log-LR genético con un escalar λ:
-#
-#   log LR_gen  →  λ × log LR_gen
-#
-#   λ = 0.0 : genética ignorada
-#   λ = 1.0 : genética con peso completo (valor del laboratorio)
-#
-# Se reporta la posterior del candidato más probable para cada λ, bajo
-# la convención elegida y ambos priors.
-#
-# Salidas:
-#   resultados/04_sensibilidad_lambda.csv
-#   resultados/graficos/04_sensibilidad_lambda.png
+
 # ============================================================================
 
 .dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),

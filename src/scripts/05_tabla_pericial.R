@@ -2,20 +2,6 @@
 # 05_tabla_pericial.R
 # Caso A "La Herrumbre" — Causa 1872/2024
 # ============================================================================
-# Genera la tabla pericial final del dictamen bayesiano:
-#
-#   Columnas por hipótesis (H0–C5):
-#     πᵢ         — prior demográfico
-#     log10 LR_ant — línea antropométrica
-#     log10 LR_abi — línea de fuentes abiertas (OSINT)
-#     log10 LR_gen — línea genética
-#     log10 LR_tot — suma total
-#     P(Hᵢ|E)    — posterior bajo prior demográfico
-#
-# Salidas:
-#   resultados/05_tabla_pericial.csv
-#   resultados/graficos/05_tabla_pericial.png   (imagen lista para PPT)
-# ============================================================================
 
 .dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),
          error = function(e) tryCatch(dirname(normalizePath(rstudioapi::getActiveDocumentContext()$path)),
@@ -52,16 +38,6 @@ cat(sprintf("TABLA PERICIAL — Convención %s+%s+%s\n",
 cat(strrep("=", 70), "\n")
 print(tabla_pericial)
 
-# ============================================================================
-# Decisión forense — regla completa del Paso 6 (consigna)
-#
-# Identificación positiva si:
-#   (a) ganador supera UMBRAL_DECISION bajo prior uniforme, Y
-#   (b) ganador supera UMBRAL_DECISION bajo prior demográfico, Y
-#   (c) ganador supera UMBRAL_DECISION con λ ≥ 0.5 (genética al 50%)
-#
-# Si (a) y (b) se cumplen pero no (c) → INDETERMINACIÓN (depende de genética entera)
-# ============================================================================
 
 # Condición (a): prior uniforme
 post_unif   <- calcular_posterior(logLR_total, prior_uniforme)

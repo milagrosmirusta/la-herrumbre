@@ -1,15 +1,7 @@
 # ============================================================================
 # 01_evolucion_posterior.R
 # Caso A "La Herrumbre" — Causa 1872/2024
-# ============================================================================
-# Calcula la posterior P(H_i | E) bajo:
-#   (a) la convención elegida en 00_setup_convenciones.R
-#   (b) prior uniforme y prior demográfico
-#   (c) las 8 combinaciones canónicas A×B×G (sensibilidad a convenciones)
-#
-# Salidas:
-#   resultados/01a_posterior_convencion_elegida.csv
-#   resultados/01b_sensibilidad_8combinaciones.csv
+
 # ============================================================================
 
 .dir <- tryCatch(dirname(normalizePath(sys.frame(1)$ofile)),

@@ -3,7 +3,7 @@
 ### Identificación forense bayesiana · Causa 1872/2024
 
 **Taller Integrador de Inferencia Bayesiana**\
-Maestría en Minería de Datos, FCEN, UBA \
+Maestría en Minería de Datos, FCEN, UBA\
 **Página web del caso:** <https://herrumbrev2.netlify.app/>
 
 ------------------------------------------------------------------------
@@ -15,7 +15,7 @@ El 14 de enero de 2024, en el paraje El Bajo (Partido de La Herrumbre, Provincia
 Se encarga un dictamen pericial bayesiano sobre seis hipótesis:
 
 | Hipótesis | Descripción |
-|---------------------------------|---------------------------------------|
+|----|----|
 | H₀ | Los restos no corresponden a ninguno de los cinco candidatos |
 | H₁ – H₅ | Los restos corresponden al candidato C1, C2, C3, C4 o C5 respectivamente |
 
